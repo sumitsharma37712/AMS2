@@ -1,3 +1,4 @@
+
 const express=require('express')
 const serverless=require('serverless-http')
 const app=new express()
@@ -23,6 +24,3 @@ app.use(cors())
 app.listen(PORT,()=>{
     console.log(`server port start ${PORT}`)
 })
-
-// app.use('./netlify/functions/api',router)
-// module.exports.handler=serverless(app)

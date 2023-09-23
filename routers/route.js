@@ -163,3 +163,11 @@ router.get("/allemp", async (req, res) => {
 
 
 module.exports = router;
+
+
+// app.use('./netlify/functions/api',router)
+// module.exports.handler=serverless(app)
+
+
+
+//    i express dotenv nodemon body-parser serverless-http cors bcryptjs jsonwebtoken validator cookie-parser express-session
