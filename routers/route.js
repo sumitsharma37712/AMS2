@@ -68,7 +68,7 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.get('/adminlogin', (req, res) => {
+router.post('/adminlogin', (req, res) => {
     try {
        const email=req.body.email;
        const password=req.body.password;
