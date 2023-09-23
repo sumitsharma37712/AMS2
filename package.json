@@ -5,12 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "netlify deploy --prod",
     "start": "node index.js"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumitsharma37712/AMS2.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sumitsharma37712/AMS2/issues"
+  },
+  "homepage": "https://github.com/sumitsharma37712/AMS2#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -20,9 +26,6 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.2",
-    "netlify-cli": "^16.4.2",
-    "netlify-lambda": "^2.0.16",
     "nodemon": "^3.0.1",
     "serverless-http": "^3.2.0",
     "validator": "^13.11.0"
