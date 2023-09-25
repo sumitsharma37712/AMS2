@@ -36,31 +36,30 @@ const Employeeverify = async (email,password)=>{
                 id:user._id,
                 email:user.email,
                 type:'user'
-            },{
-                expiresIn:"10 min"
-            }
-            token = jwt.sign(tdata,JWT_SECRET)
-            return {status:'ok',data:token}
+            },{ expiresIn:'10 min'}
+            const token = jwt.sign(tdata,JWT_SECRET)
+            console.log(token)
+            // return {status:'ok',data:token}
+            const verify = jwt.verify(token,JWT_SECRET);
+            console.log(verify)
         }
-        // return {status:"ok"} 
-
-        return {status:'error',error:'invalid password'}
+        // return {status:'error',error:'invalid password'}
     } catch (error) {
         console.log(error);
         return {status:'error',error:'timed out'}
     }
 }
 
-const verifyToken = (token)=>{
-    try {
-        const verify = jwt.verify(token,JWT_SECRET);
-        if(verify.type==='user'){return true;}
-        else{return false};
-    } catch (error) {
-        console.log(JSON.stringify(error),"error");
-        return false;
-    }
-}
+// const verifyToken = (token)=>{
+//     try {
+//         const verify = jwt.verify(token,JWT_SECRET);
+//         if(verify.type==='user'){return true;}
+//         else{return false};
+//     } catch (error) {
+//         console.log(JSON.stringify(error),"error");
+//         return false;
+//     }
+// }
 // verifyToken()
 
 const verifyadminToken = (token)=>{
@@ -75,4 +74,4 @@ const verifyadminToken = (token)=>{
 }
 // verifyadminToken()
 
-module.exports=Employeeverify,verifyToken,verifyadminToken;
+module.exports=Employeeverify,verifyadminToken;

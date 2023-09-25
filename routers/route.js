@@ -4,18 +4,18 @@ const session = require('express-session')
 require('dotenv').config();
 
 const Employee = require('../database/models/admin/register_emp')
-const adminregister=require('../database/models/admin/registeradmin')
+const adminregister = require('../database/models/admin/registeradmin')
 const Employeeatten = require('../database/models/employee/atten')
-const Employeeverify=require('../verifyjs/empv');
-const verifyToken=require("../verifyjs/empv")
-const verifyadminToken=require("../verifyjs/empv")
-const bcrypt=require('bcryptjs')
+const Employeeverify = require('../verifyjs/empv');
+const verifyToken = require("../verifyjs/empv")
+const verifyadminToken = require("../verifyjs/empv")
+const bcrypt = require('bcryptjs')
 const cors = require('cors');
 router.use(cors())
 const bodyParser = require('body-parser'); // Middleware
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 const cookie = require('cookie-parser')
-const salt=10;
+const salt = 10;
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
@@ -40,19 +40,19 @@ router.get('/', (req, res) => {
 router.post('/register', async (req, res) => {
     console.log('demo page')
     // res.send('api process integer')
-    const{ name,fname,email,contact,password:plainTextPassword }=req.body
+    const { name, fname, email, contact, password: plainTextPassword } = req.body
 
-    const password = await bcrypt.hash(plainTextPassword,salt);
+    const password = await bcrypt.hash(plainTextPassword, salt);
 
     // const data={
-        // name:name,
-        // fname:fname,
-        // email:email,
-        // contact:contact,
-        // password: password,
+    // name:name,
+    // fname:fname,
+    // email:email,
+    // contact:contact,
+    // password: password,
     // }
     try {
-        const check=await Employee.findOne({email:email})
+        const check = await Employee.findOne({ email: email })
         // const check1=await Employee.findOne({password:password})
         if (check) {
             console.log('user exist')
@@ -62,7 +62,7 @@ router.post('/register', async (req, res) => {
             // const result = await user.save()
             // const token=Employee.genterateAuthtoken()
             const response = await Employee.create({
-                name,fname,email,contact,password
+                name, fname, email, contact, password
             })
             // console.log(token)
             res.send(response)
@@ -76,28 +76,23 @@ router.post('/register', async (req, res) => {
 
 router.post('/adminlogin', (req, res) => {
     try {
-       const email=req.body.email;
-       const password=req.body.password;
-       const data={email,password}
-       const admin={email:"admin312@gmail.com",password:"boolean212"};
-        if (admin) {
-            // console.log('ewsa')
-                token = jwt.sign({
-                    email:email,
-                    type:'admin'
-                },"dkjsdmk98jhshduiewewnefhskjfhskd",
-                { 
+        const email = req.body.email;
+        const password = req.body.password;
+        if (email == "" && password == "") {
+            console.log('enter email and password')
+            res.send('enter email and password')
+        } else if (email == "admin312@gmail.com" && password == "boolean212") {
+            token = jwt.sign({
+                email: email,
+                type: 'admin'
+            }, "dkjsdmk98jhshduiewewnefhskjfhskd",
+                {
                     expiresIn: '2 hours'
                 })
-                console.log(token)
-                // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
+            console.log(token)
+            // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
 
-                // return {status:'ok',token}
-                res.send(`hello ${email}, welcome to our dashboard`)
-            // console.log('admin login')
-            // const token='dsndmsdjksds33oi3oi332'
-            // res.send({data:token})
-            // r('./admin')
+            res.send(`hello ${email}, welcome to our dashboard`)
         } else {
             console.log('Your password  and email has been worng.')
             res.send('Your password  and email has been worng.')
@@ -105,22 +100,45 @@ router.post('/adminlogin', (req, res) => {
     } catch (e) {
         // console.log(error);
         console.log(e)
-        return {status:'error',error:'timed out'}
+        return { status: 'error', error: 'timed out' }
     }
 })
 
 
+// router.post('/employeelogin', async (req, res) => {
+//     // const{email,password}=req.body
+//     try {
+//         const user = await findByCredencial(email.req.body, password.req.body)
+//         res.send(user)
+
+
+//     } catch (err) {
+//         console.log('err' + err)
+
+//     }
+
+// })
+
+
+
+
+
+
+
+
+
+
 router.post('/emplogin', async (req, res) => {
-    const{email,password}=req.body
-    const response= await Employeeverify(email,password)
+    const { email, password } = req.body
+    const response = await Employeeverify(email, password)
     console.log(response)
-    if(response.status==='ok'){
+    if (response.status === 'ok') {
         // storing our JWT web token as a cookie in our browser
         // const token = createToken(user._id);
-        // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: false });  // maxAge: 2 hours
+        res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: false });  // maxAge: 2 hours
         // res.redirect('/');
         res.send(`hello ${email}, welcome to our dashboard`)
-    }else{
+    } else {
         res.json(response);
     }
 
@@ -141,26 +159,26 @@ router.post('/emplogin', async (req, res) => {
     // }
 })
 
-router.get('/empdashboard',(req,res)=>{
+router.get('/empdashboard', (req, res) => {
 
     // const {token}=req.cookies;
-    if(verifyToken(token)){
+    if (verifyToken(token)) {
         // return res.render('home');
         console.log(verifyToken)
         console.log('token generate true')
-    }else{
+    } else {
         // res.redirect('/lo')
         console.log('token generate false')
 
     }
 })
-router.get('/admindashboard',(req,res)=>{
-    const token=req.cookies;
-    if(verifyadminToken()){
+router.get('/admindashboard', (req, res) => {
+    const token = req.cookies;
+    if (verifyadminToken()) {
         // return res.render('home');
         console.log(token)
         console.log('token generate true')
-    }else{
+    } else {
         // res.redirect('/lo')
         console.log('token generate false')
 
