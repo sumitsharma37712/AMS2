@@ -26,20 +26,20 @@ const Employee = require('../database/models/admin/register_emp')
 
 const Employeeverify = async (email,password)=>{
     try {
-        const user = await Employee.findOne({email:email}).lean()
+        const user = await Employee.findOne({email:email})
         if(!user){
             return {status:'error',error:'user not found'}
         }
         if(await bcrypt.compare(await password,user.password)){
             // creating a JWT token
-            token = jwt.sign({
+            tdata={
                 id:user._id,
                 email:user.email,
                 type:'user'
-            },JWT_SECRET,
-            { 
-                expiresIn: '2 hour'
-            })
+            },{
+                expiresIn:"10 min"
+            }
+            token = jwt.sign(tdata,JWT_SECRET)
             return {status:'ok',data:token}
         }
         // return {status:"ok"} 
@@ -61,10 +61,11 @@ const verifyToken = (token)=>{
         return false;
     }
 }
+// verifyToken()
 
 const verifyadminToken = (token)=>{
     try {
-        const verify = jwt.verify(token,JWT_SECRET);
+        const verify = jwt.verify(token,"thisisaadminloginpasswordforconfirtjone");
         if(verify.type==='admin'){return true;}
         else{return false};
     } catch (error) {
@@ -72,8 +73,6 @@ const verifyadminToken = (token)=>{
         return false;
     }
 }
-
-
-
+// verifyadminToken()
 
 module.exports=Employeeverify,verifyToken,verifyadminToken;

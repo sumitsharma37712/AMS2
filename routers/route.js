@@ -6,7 +6,9 @@ require('dotenv').config();
 const Employee = require('../database/models/admin/register_emp')
 const adminregister=require('../database/models/admin/registeradmin')
 const Employeeatten = require('../database/models/employee/atten')
-const {Employeeverify,verifyToken,verifyadminToken}=require('../verifyjs/empv');
+const Employeeverify=require('../verifyjs/empv');
+const verifyToken=require("../verifyjs/empv")
+const verifyadminToken=require("../verifyjs/empv")
 const bcrypt=require('bcryptjs')
 const cors = require('cors');
 router.use(cors())
@@ -58,11 +60,13 @@ router.post('/register', async (req, res) => {
         } else {
             // let user = new Employee(req.body)
             // const result = await user.save()
+            // const token=Employee.genterateAuthtoken()
             const response = await Employee.create({
                 name,fname,email,contact,password
             })
+            // console.log(token)
             res.send(response)
-            console.log(`${name }, Registration Successfull`)
+            console.log(`${name}, Registration Successfull`)
             // return res.redirect('/');
         }
     } catch (e) {
@@ -81,12 +85,12 @@ router.post('/adminlogin', (req, res) => {
                 token = jwt.sign({
                     email:email,
                     type:'admin'
-                },"thisisaadminloginpasswordforconfirtjone",
+                },"dkjsdmk98jhshduiewewnefhskjfhskd",
                 { 
                     expiresIn: '2 hours'
                 })
                 console.log(token)
-                res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
+                // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
 
                 // return {status:'ok',token}
                 res.send(`hello ${email}, welcome to our dashboard`)
@@ -113,7 +117,7 @@ router.post('/emplogin', async (req, res) => {
     if(response.status==='ok'){
         // storing our JWT web token as a cookie in our browser
         // const token = createToken(user._id);
-        res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
+        // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: false });  // maxAge: 2 hours
         // res.redirect('/');
         res.send(`hello ${email}, welcome to our dashboard`)
     }else{
@@ -124,7 +128,7 @@ router.post('/emplogin', async (req, res) => {
     // console.log(password1)
     // if (req.body.email && password1) {
     //     let user = await Employee.findOne(req.body).select("-password")
-    //     if (user) {
+    //     if (user) {      
     //         // req.session.user=req.body.email
     //         // console.log(req.session.user)
     //         res.send(user)
@@ -138,9 +142,11 @@ router.post('/emplogin', async (req, res) => {
 })
 
 router.get('/empdashboard',(req,res)=>{
-    const {token}=req.cookies;
+
+    // const {token}=req.cookies;
     if(verifyToken(token)){
         // return res.render('home');
+        console.log(verifyToken)
         console.log('token generate true')
     }else{
         // res.redirect('/lo')
@@ -149,9 +155,10 @@ router.get('/empdashboard',(req,res)=>{
     }
 })
 router.get('/admindashboard',(req,res)=>{
-    const {token}=req.cookies;
-    if(verifyadminToken(token)){
+    const token=req.cookies;
+    if(verifyadminToken()){
         // return res.render('home');
+        console.log(token)
         console.log('token generate true')
     }else{
         // res.redirect('/lo')
