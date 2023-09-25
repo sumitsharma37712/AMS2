@@ -4,14 +4,29 @@ require("dotenv").config();
 // const env=require('../env.json')
 
 // const JWT_SECRET=process.env.jwt;
-const MONGODB_URL=process.env.MONGODB;
+// const MONGODB_URL=process.env.MONGODB;
 const JWT_SECRET=process.env.JWT;
 const Employee = require('../database/models/admin/register_emp')
 
 // user login function
+
+// const AdminVerify=async(email,password)=>{
+//     try{
+//         const admin=await (email,password);
+//         if(!admin){
+//             return {status:'error',error:'user not found'}
+//         }
+
+//     }catch (error) {
+//         console.log(error);
+//         return {status:'error',error:'timed out'}
+//     }
+// }
+
+
 const Employeeverify = async (email,password)=>{
     try {
-        const user = await Employee.findOne({email}).lean()
+        const user = await Employee.findOne({email:email}).lean()
         if(!user){
             return {status:'error',error:'user not found'}
         }
@@ -23,7 +38,7 @@ const Employeeverify = async (email,password)=>{
                 type:'user'
             },JWT_SECRET,
             { 
-                expiresIn: '2h'
+                expiresIn: '2 hour'
             })
             return {status:'ok',data:token}
         }
@@ -47,7 +62,18 @@ const verifyToken = (token)=>{
     }
 }
 
+const verifyadminToken = (token)=>{
+    try {
+        const verify = jwt.verify(token,JWT_SECRET);
+        if(verify.type==='admin'){return true;}
+        else{return false};
+    } catch (error) {
+        console.log(JSON.stringify(error),"error");
+        return false;
+    }
+}
 
 
 
-module.exports=Employeeverify,verifyToken;
+
+module.exports=Employeeverify,verifyToken,verifyadminToken;

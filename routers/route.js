@@ -4,13 +4,14 @@ const session = require('express-session')
 require('dotenv').config();
 
 const Employee = require('../database/models/admin/register_emp')
+const adminregister=require('../database/models/admin/registeradmin')
 const Employeeatten = require('../database/models/employee/atten')
-const Employeeverify=require('../verifyjs/empv'); 
-const verifyToken=require('../verifyjs/empv'); 
+const {Employeeverify,verifyToken,verifyadminToken}=require('../verifyjs/empv');
 const bcrypt=require('bcryptjs')
 const cors = require('cors');
 router.use(cors())
 const bodyParser = require('body-parser'); // Middleware
+const jwt=require("jsonwebtoken")
 const cookie = require('cookie-parser')
 const salt=10;
 
@@ -61,6 +62,7 @@ router.post('/register', async (req, res) => {
                 name,fname,email,contact,password
             })
             res.send(response)
+            console.log(`${name }, Registration Successfull`)
             // return res.redirect('/');
         }
     } catch (e) {
@@ -73,16 +75,33 @@ router.post('/adminlogin', (req, res) => {
        const email=req.body.email;
        const password=req.body.password;
        const data={email,password}
+       const admin={email:"admin312@gmail.com",password:"boolean212"};
+        if (admin) {
+            // console.log('ewsa')
+                token = jwt.sign({
+                    email:email,
+                    type:'admin'
+                },"thisisaadminloginpasswordforconfirtjone",
+                { 
+                    expiresIn: '2 hours'
+                })
+                console.log(token)
+                res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
 
-        if (email == 'admin312@gmail.com' && password == "boolean212") {
-            console.log('admin login')
-            res.send(data)
+                // return {status:'ok',token}
+                res.send(`hello ${email}, welcome to our dashboard`)
+            // console.log('admin login')
+            // const token='dsndmsdjksds33oi3oi332'
+            // res.send({data:token})
             // r('./admin')
         } else {
             console.log('Your password  and email has been worng.')
+            res.send('Your password  and email has been worng.')
         }
     } catch (e) {
+        // console.log(error);
         console.log(e)
+        return {status:'error',error:'timed out'}
     }
 })
 
@@ -129,6 +148,17 @@ router.get('/empdashboard',(req,res)=>{
 
     }
 })
+router.get('/admindashboard',(req,res)=>{
+    const {token}=req.cookies;
+    if(verifyadminToken(token)){
+        // return res.render('home');
+        console.log('token generate true')
+    }else{
+        // res.redirect('/lo')
+        console.log('token generate false')
+
+    }
+})
 
 
 
@@ -141,13 +171,12 @@ router.get('/admin', (req, res) => {
 router.get("/allemp", async (req, res) => {
     try {
         let user = await Employee.find({})
-        res.send({ status: 'ok', data: user })
-
-
+        // res.send({ status: 'ok', data: user })
+        res.send(user)
+        // console.log(user)
     }
     catch (err) {
         console.log(err)
-
     }
 
 })
