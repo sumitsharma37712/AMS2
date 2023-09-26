@@ -14,6 +14,7 @@ const cors = require('cors');
 router.use(cors())
 const bodyParser = require('body-parser'); // Middleware
 const jwt = require("jsonwebtoken")
+const multer=require('multer')
 const cookie = require('cookie-parser')
 const salt = 10;
 
@@ -30,17 +31,29 @@ router.use(session({
 }))
 
 
+var storage = multer.diskStorage({
+    destination: 'src',
 
+    destination: (req, file, callBack) => {
+        callBack(null, 'src')     // './public/images/' directory name where save the file
+    },
+    filename: (req, file, callBack) => {
+        callBack(null, file.originalname)
+    }
+})
+var upload = multer({
+    storage: storage
+});
 
 router.get('/', (req, res) => {
     console.log('demo page')
     res.send("<h1> hii</h1>")
 
 })
-router.post('/register', async (req, res) => {
+router.post('/register',upload.single('filename'), async (req, res) => {
     console.log('demo page')
     // res.send('api process integer')
-    const { name, fname, email, contact, password: plainTextPassword } = req.body
+    const { name, fname, email, contact,address,salary,password: plainTextPassword } = req.body
 
     const password = await bcrypt.hash(plainTextPassword, salt);
 
@@ -53,21 +66,16 @@ router.post('/register', async (req, res) => {
     // }
     try {
         const check = await Employee.findOne({ email: email })
-        // const check1=await Employee.findOne({password:password})
         if (check) {
             console.log('user exist')
             res.send('user alredy registered')
         } else {
-            // let user = new Employee(req.body)
-            // const result = await user.save()
-            // const token=Employee.genterateAuthtoken()
             const response = await Employee.create({
-                name, fname, email, contact, password
+                name, fname, email, contact,address,salary,password,
+                filename:req.file.filename
             })
-            // console.log(token)
             res.send(response)
             console.log(`${name}, Registration Successfull`)
-            // return res.redirect('/');
         }
     } catch (e) {
         console.log(e)
@@ -90,43 +98,16 @@ router.post('/adminlogin', (req, res) => {
                     expiresIn: '2 hours'
                 })
             console.log(token)
-            // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
-
-            // res.send(`hello ${email}, welcome to our dashboard`)
             res.send({"token":token})
         } else {
             console.log('Your password  and email has been worng.')
             res.send('Your password  and email has been worng.')
         }
     } catch (e) {
-        // console.log(error);
         console.log(e)
         return { status: 'error', error: 'timed out' }
     }
 })
-
-
-// router.post('/employeelogin', async (req, res) => {
-//     // const{email,password}=req.body
-//     try {
-//         const user = await findByCredencial(email.req.body, password.req.body)
-//         res.send(user)
-
-
-//     } catch (err) {
-//         console.log('err' + err)
-
-//     }
-
-// })
-
-
-
-
-
-
-
-
 
 
 router.post('/emplogin', async (req, res) => {
@@ -134,11 +115,8 @@ router.post('/emplogin', async (req, res) => {
     const response = await Employeeverify(email, password)
     console.log(response)
     if (response.status === 'ok') {
-        // storing our JWT web token as a cookie in our browser
-        // const token = createToken(user._id);
-        res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: false });  // maxAge: 2 hours
-        // res.redirect('/');
-        res.send(`hello ${email}, welcome to our dashboard`)
+        res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: false });
+        res.send({"token":token})
     } else {
         res.json(response);
     }
@@ -161,26 +139,19 @@ router.post('/emplogin', async (req, res) => {
 })
 
 router.get('/empdashboard', (req, res) => {
-
-    // const {token}=req.cookies;
-    if (verifyToken(token)) {
-        // return res.render('home');
+    if (verifyToken(token)){
         console.log(verifyToken)
         console.log('token generate true')
     } else {
-        // res.redirect('/lo')
         console.log('token generate false')
-
     }
 })
 router.get('/admindashboard', (req, res) => {
     const token = req.cookies;
     if (verifyadminToken()) {
-        // return res.render('home');
         console.log(token)
         console.log('token generate true')
     } else {
-        // res.redirect('/lo')
         console.log('token generate false')
 
     }
@@ -197,9 +168,7 @@ router.get('/admin', (req, res) => {
 router.get("/allemp", async (req, res) => {
     try {
         let user = await Employee.find({})
-        // res.send({ status: 'ok', data: user })
         res.send(user)
-        // console.log(user)
     }
     catch (err) {
         console.log(err)
@@ -207,22 +176,4 @@ router.get("/allemp", async (req, res) => {
 
 })
 
-
-// router.get('/empatten',()=>{
-
-
-// })
-
-
-
-
-
 module.exports = router;
-
-
-// app.use('./netlify/functions/api',router)
-// module.exports.handler=serverless(app)
-
-
-
-//    i express dotenv nodemon body-parser serverless-http cors bcryptjs jsonwebtoken validator cookie-parser express-session
