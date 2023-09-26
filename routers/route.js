@@ -31,26 +31,26 @@ router.use(session({
 }))
 
 
-var storage = multer.diskStorage({
-    destination: 'src',
+// var storage = multer.diskStorage({
+//     destination: 'src',
 
-    destination: (req, file, callBack) => {
-        callBack(null, 'src')     // './public/images/' directory name where save the file
-    },
-    filename: (req, file, callBack) => {
-        callBack(null, file.originalname)
-    }
-})
-var upload = multer({
-    storage: storage
-});
+//     destination: (req, file, callBack) => {
+//         callBack(null, 'src')     // './public/images/' directory name where save the file
+//     },
+//     filename: (req, file, callBack) => {
+//         callBack(null, file.originalname)
+//     }
+// })
+// var upload = multer({
+//     storage: storage
+// });
 
 router.get('/', (req, res) => {
     console.log('demo page')
     res.send("<h1> hii</h1>")
 
 })
-router.post('/register',upload.single('filename'), async (req, res) => {
+router.post('/register', async (req, res) => {
     console.log('demo page')
     // res.send('api process integer')
     const { name, fname, email, contact,address,salary,password: plainTextPassword } = req.body
@@ -72,13 +72,14 @@ router.post('/register',upload.single('filename'), async (req, res) => {
         } else {
             const response = await Employee.create({
                 name, fname, email, contact,address,salary,password,
-                filename:req.file.filename
+                // filename:req.file.filename
             })
             res.send(response)
             console.log(`${name}, Registration Successfull`)
         }
     } catch (e) {
         console.log(e)
+        res.send(e)
     }
 })
 
