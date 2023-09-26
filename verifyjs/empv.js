@@ -64,7 +64,7 @@ const Employeeverify = async (email,password)=>{
 
 const verifyadminToken = (token)=>{
     try {
-        const verify = jwt.verify(token,"thisisaadminloginpasswordforconfirtjone");
+        const verify = jwt.verify(token,"Booleanai$23@as$%");
         if(verify.type==='admin'){return true;}
         else{return false};
     } catch (error) {

@@ -54,6 +54,46 @@ const attendenceSchema=mongoose.Schema({
 const attendence=mongoose.model('register',attendenceSchema)
 
 
+// attendenceSchema.pre('save',function (next){
+//     const emp=this
+    
+
+// })
+// attendenceSchema.statics.findByCredencial=async(email,password)=>{
+//     const user=await attendence.findOne({email})
+//     if(!user){
+//         throw new Error('unable to login')
+//     }
+//     const isMatch=await bcrypt.compare(password, user.password)
+
+//     if(!isMatch){
+//         throw new Error('password not match unable login')
+//     }
+//     return user
+
+
+// }
+
+
+
+
+
+
+// // generate token
+// attendenceSchema.model.genterateAuthtoken=async function(){
+//     try{
+//         console.log(this._id)
+//         const token=jwt.sign({_id:this._id},"thisisaemployeetoken")
+//         this.tokens=this.tokens.concat({token})
+//        await this.save()
+//        return token;
+
+//     }catch(err){
+//         // res.send("this is error"+err)
+//         console.log('this is error part'+err)
+//     }
+// }
+
 
 
 

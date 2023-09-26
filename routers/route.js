@@ -85,14 +85,15 @@ router.post('/adminlogin', (req, res) => {
             token = jwt.sign({
                 email: email,
                 type: 'admin'
-            }, "dkjsdmk98jhshduiewewnefhskjfhskd",
+            }, "Booleanai$23@as$%",
                 {
                     expiresIn: '2 hours'
                 })
             console.log(token)
             // res.cookie('token',token,{ maxAge: 1000 * 60 * 60 * 24, httpOnly: true });  // maxAge: 2 hours
 
-            res.send(`hello ${email}, welcome to our dashboard`)
+            // res.send(`hello ${email}, welcome to our dashboard`)
+            res.send({"token":token})
         } else {
             console.log('Your password  and email has been worng.')
             res.send('Your password  and email has been worng.')
