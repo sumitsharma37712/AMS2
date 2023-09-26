@@ -104,7 +104,7 @@ router.post('/adminlogin', (req, res) => {
             if(!token){
                 res.send("token not generate")
             }else{
-                res.send(token)
+                res.send({"token":token})
             }
             
 
