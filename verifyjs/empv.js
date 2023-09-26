@@ -36,7 +36,7 @@ const Employeeverify = async (email,password)=>{
                 id:user._id,
                 email:user.email,
                 type:'user'
-            },{ expiresIn:'10 min'}
+            },{ expiresIn:'10 minutes'}
             const token = jwt.sign(tdata,JWT_SECRET)
             console.log(token)
             // return {status:'ok',data:token}
@@ -62,16 +62,28 @@ const Employeeverify = async (email,password)=>{
 // }
 // verifyToken()
 
-const verifyadminToken = (token)=>{
-    try {
-        const verify = jwt.verify(token,"Booleanai$23@as$%");
-        if(verify.type==='admin'){return true;}
-        else{return false};
-    } catch (error) {
-        console.log(JSON.stringify(error),"error");
-        return false;
-    }
-}
+// const verifyadminToken = (token)=>{
+    // try {
+    //     const verify = jwt.verify(token,"Booleanai$23@as$%",(err,res)=>{
+    //         if(err){
+    //             return "token Expire"    
+    //         }
+    //         return res
+            
+    //     });
+
+    //     if(verify.type==='admin'){
+    //         return true;
+    //     }else if(verify=="token Expire"){
+    //         res.send({data:"token expired"})
+
+    //     }
+    //     {return false};
+    // } catch (error) {
+    //     console.log(JSON.stringify(error),"error");
+    //     return false;
+    // }
+// }
 // verifyadminToken()
 
-module.exports=Employeeverify,verifyadminToken;
+module.exports=Employeeverify;

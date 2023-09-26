@@ -16,7 +16,11 @@ const Employeeatten=require('./database/models/employee/atten')
 const cors=require('cors')
 app.use(express.json())
 app.use(router)
-app.use(cors())
+app.use(cors({
+    origin:"http://localhost:4000",
+    methods:["GET","POST"],
+    credentials:true
+}))
 
 
 app.listen(PORT,()=>{

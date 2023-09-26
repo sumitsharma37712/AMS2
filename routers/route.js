@@ -21,7 +21,7 @@ const salt = 10;
 router.use(bodyParser.urlencoded({ extended: false }));
 
 router.use(session({
-    secret: 'secret',
+    secret: 'secretkey',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -31,26 +31,26 @@ router.use(session({
 }))
 
 
-// var storage = multer.diskStorage({
-//     destination: 'src',
+var storage = multer.diskStorage({
+    destination: 'src',
 
-//     destination: (req, file, callBack) => {
-//         callBack(null, 'src')     // './public/images/' directory name where save the file
-//     },
-//     filename: (req, file, callBack) => {
-//         callBack(null, file.originalname)
-//     }
-// })
-// var upload = multer({
-//     storage: storage
-// });
+    destination: (req, file, callBack) => {
+        callBack(null, 'src')     // './public/images/' directory name where save the file
+    },
+    filename: (req, file, callBack) => {
+        callBack(null, file.originalname)
+    }
+})
+var upload = multer({
+    storage: storage
+});
 
 router.get('/', (req, res) => {
     console.log('demo page')
     res.send("<h1> hii</h1>")
 
 })
-router.post('/register', async (req, res) => {
+router.post('/register',upload.single('filename'), async (req, res) => {
     console.log('demo page')
     // res.send('api process integer')
     const { name, fname, email, contact,address,salary,password: plainTextPassword } = req.body
@@ -91,15 +91,23 @@ router.post('/adminlogin', (req, res) => {
             console.log('enter email and password')
             res.send('enter email and password')
         } else if (email == "admin312@gmail.com" && password == "boolean212") {
+            req.session.email=email
+            console.log(req.session.email)
             token = jwt.sign({
                 email: email,
                 type: 'admin'
             }, "Booleanai$23@as$%",
-                {
-                    expiresIn: '2 hours'
-                })
-            console.log(token)
-            res.send({"token":token})
+            {
+                expiresIn: '10 seconds'
+            })
+            console.log('Login admin')
+            if(!token){
+                res.send("token not generate")
+            }else{
+                res.send(token)
+            }
+            
+
         } else {
             console.log('Your password  and email has been worng.')
             res.send('Your password  and email has been worng.')
@@ -147,15 +155,39 @@ router.get('/empdashboard', (req, res) => {
         console.log('token generate false')
     }
 })
-router.get('/admindashboard', (req, res) => {
-    const token = req.cookies;
-    if (verifyadminToken()) {
-        console.log(token)
-        console.log('token generate true')
-    } else {
-        console.log('token generate false')
+router.post('/admindashboard', (req, res) => {
+    // const token = req.cookies;
+    try {
+        const verify = jwt.verify(token,"Booleanai$23@as$%",(err,res)=>{
+            if(err){
+                return "token Expire"    
+            }
+            return res.send("data send")
+            
+        });
 
+        if(verify.type==='admin'){
+            return true;
+        }else if(verify=="token Expire"){
+            res.send({data:"token expired"})
+        }else {
+            return false
+            
+        };
+    } catch (error) {
+        console.log(JSON.stringify(error),"error");
+        return false;
     }
+
+    // if(req.session.email){
+    //     return res.send({valid:true,email:req.session.email})
+    // }else{
+    //     return res.send({valid:false})
+    // }
+
+
+
+
 })
 
 
