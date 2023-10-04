@@ -1,9 +1,6 @@
 const bcrypt=require('bcryptjs')
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
-// const env=require('../env.json')
-
-// const JWT_SECRET=process.env.jwt;
 // const MONGODB_URL=process.env.MONGODB;
 const JWT_SECRET=process.env.JWT;
 const Employee = require('../database/models/admin/register_emp')

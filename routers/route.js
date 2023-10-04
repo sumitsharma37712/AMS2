@@ -51,10 +51,10 @@ router.get('/', (req, res) => {
     res.send("<h1> hii</h1>")
 
 })
-router.post('/register', upload.single('filename'), async (req, res) => {
+router.post('/dashboard/employeeregister', upload.single('filename'), async (req, res) => {
     console.log('demo page')
     // res.send('api process integer')
-    const { name, fname, email, contact, address, salary, password: plainTextPassword } = req.body
+    const { empID,name, fname, email, contact, address, salary, password: plainTextPassword } = req.body
 
     const password = await bcrypt.hash(plainTextPassword, salt);
 
@@ -72,7 +72,7 @@ router.post('/register', upload.single('filename'), async (req, res) => {
             res.send('user alredy registered')
         } else {
             const response = await Employee.create({
-                name, fname, email, contact, address, salary, password,
+                empID,name, fname, email, contact, address, salary, password,
                 // filename:req.file.filename
             })
             res.send(response)
@@ -84,13 +84,13 @@ router.post('/register', upload.single('filename'), async (req, res) => {
     }
 })
 
-router.post('/adminlogin', (req, res) => {
+router.post('/login/adminlogin', (req, res) => {
     try {
         const email = req.body.email;
         const password = req.body.password;
         if (email == "" && password == "") {
             console.log('enter email and password')
-            res.send({error:"'enter email and password"})
+            return res.json({ error: "enter email and password" })
 
         } else if (email == "admin312@gmail.com" && password == "boolean212") {
             req.session.email = email
@@ -104,24 +104,26 @@ router.post('/adminlogin', (req, res) => {
                 })
             console.log('Login admin')
             if (!token) {
-                res.send("token not generate")
+                return res.json({ "token": "token not generate" })
             } else {
-                res.send({ "token": token })
+
+                res.status(200).json({ "token": token })
+                req.session.email = email
             }
-
-
         } else {
-            console.log({"err":'Your password  and email has been worng.'})
-            res.send({error:"Your password  and email has been worng."})
+            console.log({ "err": 'Your password  and email has been worng.' })
+            return res.status(401).send({ error: "Your password  and email has been worng." })
         }
-    } catch (e) {
-        console.log(e)
-        res.send({ status: 'error', error: 'timed out' })
+    } catch (error) {
+        res.status(400).json({
+            message: "An error occurred",
+            error: error.message,
+        })
     }
 })
 
 
-router.post('/emplogin', async (req, res) => {
+router.post('/login/emplogin', async (req, res) => {
     const { email, password } = req.body
     try {
         const user = await Employee.findOne({ email: email })
@@ -171,7 +173,7 @@ router.post('/emplogin', async (req, res) => {
 //     res.send('no Employee found')
 // }
 
-router.get('/empdashboard', (req, res) => {
+router.get('/employee/empdashboard', (req, res) => {
     if (verifyToken(token)) {
         console.log(verifyToken)
         console.log('token generate true')
@@ -221,15 +223,16 @@ router.get('/empdashboard', (req, res) => {
 
 
 
-router.get('/admin', (req, res) => {
+router.get('/admin/dashboard', (req, res) => {
     res.send('welcome back', data)
 })
 
 
-router.get("/allemp", async (req, res) => {
+router.get("/empdashboard/allemp", async (req, res) => {
     try {
         let user = await Employee.find({})
-        res.send(user)
+        res.send({ data: user })
+        console.log('all details')
     }
     catch (err) {
         console.log(err)
@@ -237,7 +240,7 @@ router.get("/allemp", async (req, res) => {
 
 })
 
-router.delete('/allemp/:id', async (req, res) => {
+router.delete('/empdashboard/allemp/:id', async (req, res) => {
     let del = req.params.id
     try {
         let emp = await Employee.deleteOne({ _id: del })
@@ -251,12 +254,12 @@ router.delete('/allemp/:id', async (req, res) => {
     }
 })
 
-router.put('/allemp/:id', async (req, res) => {
+router.put('/empdashboard/allemp/:id', async (req, res) => {
     let upl = req.params.id
     let { name, fname, } = req.body
     // console.log(name, fname)
     try {
-        let update = await Employee.findByIdAndUpdate({ _id: upl }, { $set: { name, fname } })        
+        let update = await Employee.findByIdAndUpdate({ _id: upl }, { $set: { name, fname } })
         if (update) {
             res.status(200).send('update success')
             console.log('update success')
@@ -269,6 +272,93 @@ router.put('/allemp/:id', async (req, res) => {
         console.log(e)
     }
 })
+
+
+
+
+
+
+
+// attendance details
+
+router.post('/employee/atten', async (req, res) => {
+    const {empID, present, absent,date, punchin } = req.body
+    try {
+        const atten = await Employeeatten.create({
+           empID, present, absent, punchin,date
+        })
+        res.send(atten)
+
+    } catch (e) {
+        console.log(e)
+        res.send({ 'err': e })
+    }
+})
+
+router.post('/employee/atten/:date', async (req, res) => {
+    const date = req.params.date
+    const { punchout } = req.bo1dy
+    try {
+        console.log(date)
+        const atteno = await Employeeatten.updateOne({date }, { $set: { punchout: punchout } })
+        console.log(punchout)
+        res.send(atteno)
+        console.log({ 'atten update': atteno })
+        // const atteno1=await Employeeatten.findById({_id})
+        // res.send(atteno1)
+        console.log()
+    } catch (e) {
+        console.log(e)
+        res.send({ 'err': e })
+    }
+})
+
+router.get('/employee/attenD', async (req, res) => {
+    try {
+        const response = await Employeeatten.find({})
+        res.send(response)
+    } catch (e) {
+        console.log(e)
+        res.send({ 'err': e })
+    }
+})
+
+router.get('/employee/attenf', async (req, res) => {
+    try {
+        const response = await Employeeatten.find({ absent: "Y" })
+        res.send(response)
+    } catch (e) {
+        console.log(e)
+        res.send({ 'err': e })
+    }
+})
+
+
+// filter
+
+router.get('/employee/attenag',async( req,res)=>{
+    try{
+        const response= await Employeeatten.aggregate([
+            { $lookup:
+                {
+                  from: 'registers',
+                  localField: 'empID',
+                  foreignField: 'empID',
+                  as: 'registered'
+                }
+              }
+        ])
+        res.send(response)
+    }catch(e){
+        console.log(e)
+        res.send({ 'err': e })
+    }
+})
+
+
+
+
+
 
 
 

@@ -2,6 +2,12 @@ const mongoose=require('mongoose')
 const validator=require('validator')
 
 const attendenceSchema=mongoose.Schema({
+    
+    empID:{
+        type:String,
+        trim:true,
+        required:true
+    },
     name:{
         type:String,
         required:true,

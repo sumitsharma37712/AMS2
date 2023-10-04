@@ -1,32 +1,33 @@
-const mongoose=require('mongoose')
-const validator=require('validator')
+const mongoose = require('mongoose')
+const validator = require('validator')
 
-const attendenceSchema=mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-        lowercase:true,
+const attendenceSchema = mongoose.Schema({
+    empID:{
+        type: String,
+        required: true,
         trim:true
-
     },
-    date:{
-        type:Date,
-        require:true,
+    present: {
+        type: String,
+        minimum: 1
     },
-    present:{
+    absent: {
+        type: String,
+        minimum: 1
+    },
+    punchin:{
         type:String,
-        require:true,
-        minimum:1
     },
-    absent:{
+    punchout:{
         type:String,
-        minimum:1
+        
     },
-    date:{
-        type:Date,
-        default:Date.now
+    date: {
+        type: String,
+        // default: Date.now
     }
-})
-const empatten=mongoose.model('empatten',attendenceSchema)
+},{ timestamps: true })
+const empatten = mongoose.model('empatten', attendenceSchema)
 
-module.exports=empatten;
+module.exports = empatten;
+
