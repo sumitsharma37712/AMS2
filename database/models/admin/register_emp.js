@@ -56,10 +56,6 @@ const attendenceSchema=mongoose.Schema({
         type:String,
         require:true,
         length:8
-    },    
-    date:{
-        type:Date,
-        default:Date.now
     },
 },{ timestamps: true })
 const attendence=mongoose.model('register',attendenceSchema) 

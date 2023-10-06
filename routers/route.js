@@ -67,7 +67,11 @@ router.post('/dashboard/employeeregister', upload.single('filename'), async (req
     // }
     try {
         const check = await Employee.findOne({ email: email })
+        const check2 = await Employee.findOne({ empID: empID })
         if (check) {
+            console.log('user exist')
+            res.send('user alredy registered')
+        }else if(check2){
             console.log('user exist')
             res.send('user alredy registered')
         } else {
@@ -124,9 +128,10 @@ router.post('/login/adminlogin', (req, res) => {
 
 
 router.post('/login/emplogin', async (req, res) => {
-    const { email, password } = req.body
+    const { email, password,empID } = req.body
     try {
         const user = await Employee.findOne({ email: email })
+        const user1 = await Employee.findOne({ empID: empID })
 
         if (!user) {
             return { status: 'error', error: 'user not found' }
@@ -141,6 +146,9 @@ router.post('/login/emplogin', async (req, res) => {
             const token = jwt.sign(tdata, JWT_SECRET)
             console.log(token)
             res.send({ data: user, token: token })
+        }else{
+            console.log('password not match')
+            res.send({err:"password not match"})
         }
     } catch (e) {
         console.log(e)
@@ -275,6 +283,69 @@ router.put('/empdashboard/allemp/:id', async (req, res) => {
 
 
 
+// password update/change
+
+router.post('/employee/passwordc',async(req,res)=>{
+    const email=req.body
+   try{
+    const response =await Employee.find(email)
+    if(response){        
+        res.send(response)
+    }else{
+        res.send({err:'user not found'})
+    }
+
+   }catch(e){
+    res.send({e})
+    console.log(e)
+   }
+})
+
+router.put('/employee/passwordc/:email',async(req,res)=>{
+    const email=req.params.email
+    const {password:plainTextPassword}=req.body
+    const npassword = await bcrypt.hash(plainTextPassword, salt);
+    try{
+        const response =await Employee.updateOne({email:email}, { $set: { password:npassword } })
+    if (response) {
+        res.status(200).send({success:'password updated!'})
+        console.log({success:'password updated!'})
+    } else {
+        res.status(200).send({err:'password not  updated!'})
+        console.log({err:'password not updated!'})
+    }
+
+
+    }catch(e){
+        res.status(404).send(e)
+        console.log({e})
+
+    }
+
+    
+    // if(await bcrypt.compare(await oldpass, response.password)){
+    //     const npassword = await bcrypt.hash(plainTextPassword, salt);
+    //     const response =await Employee.findByIdAndUpdate({ email: email }, { $set: { password:npassword } })
+    //     if (response) {
+    //         res.status(200).send('update success')
+    //         console.log('update success')
+    //     } else {
+    //         res.status(200).send('update not success')
+    //         console.log('update not success')
+    //     }
+
+
+    // }
+
+
+   
+})
+
+
+
+
+
+
 
 
 
@@ -323,9 +394,18 @@ router.get('/employee/attenD', async (req, res) => {
     }
 })
 
-router.get('/employee/attenf', async (req, res) => {
+router.get('/employee/attena', async (req, res) => {
     try {
         const response = await Employeeatten.find({ absent: "Y" })
+        res.send(response)
+    } catch (e) {
+        console.log(e)
+        res.send({ 'err': e })
+    }
+})
+router.get('/employee/attenp', async (req, res) => {
+    try {
+        const response = await Employeeatten.find({ present: "Y" })
         res.send(response)
     } catch (e) {
         console.log(e)
