@@ -353,12 +353,12 @@ router.put('/employee/passwordc/:email',async(req,res)=>{
 // attendance details
 
 router.post('/employee/atten', async (req, res) => {
-    const {empID, present, absent,date, punchin } = req.body
+    const {empID, atten ,date, punchin } = req.body
     try {
-        const atten = await Employeeatten.create({
-           empID, present, absent, punchin,date
+        const attendence = await Employeeatten.create({
+           empID, atten, punchin,date
         })
-        res.send(atten)
+        res.send(attendence)
 
     } catch (e) {
         console.log(e)
@@ -368,10 +368,10 @@ router.post('/employee/atten', async (req, res) => {
 
 router.post('/employee/atten/:date', async (req, res) => {
     const date = req.params.date
-    const { punchout } = req.bo1dy
+    const { punchout } = req.body
     try {
         console.log(date)
-        const atteno = await Employeeatten.updateOne({date }, { $set: { punchout: punchout } })
+        const atteno = await Employeeatten.updateMany({date }, { $set: { punchout: punchout } })
         console.log(punchout)
         res.send(atteno)
         console.log({ 'atten update': atteno })
@@ -396,7 +396,7 @@ router.get('/employee/attenD', async (req, res) => {
 
 router.get('/employee/attena', async (req, res) => {
     try {
-        const response = await Employeeatten.find({ absent: "Y" })
+        const response = await Employeeatten.find({atten:"absent"})
         res.send(response)
     } catch (e) {
         console.log(e)
@@ -404,9 +404,25 @@ router.get('/employee/attena', async (req, res) => {
     }
 })
 router.get('/employee/attenp', async (req, res) => {
+    const date=new Date()
+    console.log(date)
     try {
-        const response = await Employeeatten.find({ present: "Y" })
-        res.send(response)
+        const response = await Employeeatten.find({$and:[{date:"01-08-2023"},{atten: "present"}]})
+        const response1 = await Employeeatten.find({$and:[{date:"01-08-2023"},{atten: "absent"}]})
+
+        const response2 = await Employeeatten.find({$and:[{date:"02-08-2023"},{atten: "present"}]})
+        const response21 = await Employeeatten.find({$and:[{date:"02-08-2023"},{atten: "absent"}]})
+
+        const response3 = await Employeeatten.find({$and:[{date:"03-08-2023"},{atten: "present"}]})
+        const response31 = await Employeeatten.find({$and:[{date:"03-08-2023"},{atten: "absent"}]})
+
+        const response4 = await Employeeatten.find({$and:[{date:"04-08-2023"},{atten: "present"}]})
+        const response41 = await Employeeatten.find({$and:[{date:"04-08-2023"},{atten: "absent"}]})
+
+        const response5 = await Employeeatten.find({$and:[{date:"05-08-2023"},{atten: "present"}]})
+        const response51 = await Employeeatten.find({$and:[{date:"05-08-2023"},{atten: "absent"}]})
+        let user = await Employee.find({})
+        res.send({response,response1,response2,response21,response3,response31,response4,response41,response5,response51,user})
     } catch (e) {
         console.log(e)
         res.send({ 'err': e })
@@ -437,6 +453,8 @@ router.get('/employee/attenag',async( req,res)=>{
 
 
 
+
+// all emp details and show current present
 
 
 

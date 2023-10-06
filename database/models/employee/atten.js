@@ -7,13 +7,9 @@ const attendenceSchema = mongoose.Schema({
         required: true,
         trim:true
     },
-    present: {
+    
+    atten: {
         type: String,
-        minimum: 1
-    },
-    absent: {
-        type: String,
-        minimum: 1
     },
     punchin:{
         type:String,
