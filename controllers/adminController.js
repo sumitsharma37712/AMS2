@@ -73,7 +73,7 @@ const adminAuth=asyncHandler(async(req,res)=>{
     const user=await adminregister.findOne({email})
     try{
       if(!user){
-        return res.send({err:`someting wrong ${email} not found`})
+        // return res.send({err:`someting wrong ${email} not found`})
       }else if(await bcrypt.compare(await password, user.password)){(
         tdata = {
           id:user._id,
@@ -96,7 +96,7 @@ const adminAuth=asyncHandler(async(req,res)=>{
 
         // return res.send({data:user,token:token},req.session.email,console.log(req.session.email))  
       }else{
-        return res.send({err:`someting wrong user and password not found`})
+        // res.send({err:`someting wrong user and password not found`})
       }
     }catch(e){
       return res.send({e:"error"})
