@@ -38,8 +38,8 @@ const employeeAuth = asyncHandler(async (req, res) => {
   const user = await Employee.findOne({ email: email });
   const user1 = await Employee.findOne({ empID: empID });
   if (!user) {
-    res.status(400)
-    throw new Error('User Not Found')
+    res.status(400).send({error:"User not found"})
+    // throw new Error('User Not Found')
 
   }
   try {
@@ -55,7 +55,7 @@ const employeeAuth = asyncHandler(async (req, res) => {
       console.log(token);
       // const data=res.send({ data: user, token: token });
       if (!token) {
-        res.status(404)
+        res.status(400)
         throw Error('token not generate')
       } else {
         const data = res.json({
@@ -71,8 +71,8 @@ const employeeAuth = asyncHandler(async (req, res) => {
       }
     } else {
       console.log("password not match");
-      res.status(404)
-      throw Error('password not match')
+      res.status(400).send({error:'password not match'})
+      // throw Error('password not match')
     }
   } catch (e) {
     console.log(e);
