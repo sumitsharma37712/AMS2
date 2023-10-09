@@ -39,7 +39,7 @@ const employeeAuth = asyncHandler(async (req, res) => {
     const user1 = await Employee.findOne({ empID: empID });
 
     if (!user) {
-      return { status: "error", error: "user not found" };
+      // return { status: "error", error: "user not found" };
     }
     if (await bcrypt.compare(await password, user.password)) {
       // creating a JWT token
@@ -53,7 +53,7 @@ const employeeAuth = asyncHandler(async (req, res) => {
       console.log(token);
       // const data=res.send({ data: user, token: token });
       if (!token) {
-        res.send({ err: "token not generate" })
+        // res.send({ err: "token not generate" })
       } else {
         const data = res.json({
           _id: user._id,
@@ -68,7 +68,7 @@ const employeeAuth = asyncHandler(async (req, res) => {
       }
     } else {
       console.log("password not match");
-      res.send({ err: "password not match" });
+      // res.send({ err: "password not match" });
     }
   } catch (e) {
     console.log(e);
