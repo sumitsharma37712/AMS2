@@ -72,7 +72,7 @@ const adminAuth=asyncHandler(async(req,res)=>{
     const {email,password}=req.body
     const user=await adminregister.findOne({email})
     if(!user){
-        return res.status(400).send({status:"error"})
+        return res.status(404).send()
       }
     try{
       if(await bcrypt.compare(await password, user.password)){(
