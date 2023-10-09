@@ -34,13 +34,12 @@ const employeeRegister = asyncHandler(async (req, res) => {
 })
 const employeeAuth = asyncHandler(async (req, res) => {
   const { email, password, empID } = req.body;
+  const user = await Employee.findOne({ email: email });
+  const user1 = await Employee.findOne({ empID: empID });
+  if (!user) {
+   return res.status(400).send('can not find user')
+  }
   try {
-    const user = await Employee.findOne({ email: email });
-    const user1 = await Employee.findOne({ empID: empID });
-
-    if (!user) {
-      // return { status: "error", error: "user not found" };
-    }
     if (await bcrypt.compare(await password, user.password)) {
       // creating a JWT token
       (tdata = {
@@ -53,7 +52,7 @@ const employeeAuth = asyncHandler(async (req, res) => {
       console.log(token);
       // const data=res.send({ data: user, token: token });
       if (!token) {
-        // res.send({ err: "token not generate" })
+        res.status(400).send({ err: "token not generate" })
       } else {
         const data = res.json({
           _id: user._id,
@@ -68,7 +67,7 @@ const employeeAuth = asyncHandler(async (req, res) => {
       }
     } else {
       console.log("password not match");
-      // res.send({ err: "password not match" });
+     return res.status(400).send({ err: "password not match" });
     }
   } catch (e) {
     console.log(e);
@@ -85,23 +84,6 @@ const attendanceRegister = asyncHandler(async (req, res) => {
   const { empID, atten, date, punchin } = req.body;
 
   try {
-    // const date1 = await Employeeatten.find({ date })
-    // const empID1 = await Employeeatten.find({ empID })
-    // if (date1) {
-    //   console.log('date same')
-    //   if (!empID1) {
-    //     const attendence = await Employeeatten.create({
-    //       empID, atten, punchin, date,
-    //     });
-    //     res.send(attendence)      
-    //   } else {
-    //     console.log('stauts')
-    //     res.send('status')
-    //   } 
-    // }
-    // else {
-    //   res.send('date not same ')
-    // }
     const attendence = await Employeeatten.create({
             empID, atten, punchin, date,
           });
@@ -129,6 +111,12 @@ const attendanceRegister = asyncHandler(async (req, res) => {
 })
 
 
+
+// https://www.google.com/maps?q= ${coords.latitude},${coords.longitute}`
+// const dragon=asyncHandler(coords,(req,res)=>{
+
+
+// })
 
 
 
