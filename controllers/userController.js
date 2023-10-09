@@ -95,7 +95,7 @@ const attendanceRegister = asyncHandler(async (req, res) => {
           
   } catch (error) {
     console.log({ 'error': error })
-    res.send({ 'error': error })
+    res.status(404)
 
   }
 
