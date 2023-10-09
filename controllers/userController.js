@@ -7,6 +7,7 @@ const salt = 10;
 JWT_SECRET = process.env.JWT;
 
 // employee register and login  
+
 const employeeRegister = asyncHandler(async (req, res) => {
   const { empID, name, fname, email, contact, address, salary, password: plainTextPassword, } = req.body;
   const password = await bcrypt.hash(plainTextPassword, salt);
@@ -37,7 +38,9 @@ const employeeAuth = asyncHandler(async (req, res) => {
   const user = await Employee.findOne({ email: email });
   const user1 = await Employee.findOne({ empID: empID });
   if (!user) {
-   return res.status(400).send('can not find user')
+    res.status(400)
+    throw new Error('User Not Found')
+
   }
   try {
     if (await bcrypt.compare(await password, user.password)) {
@@ -52,7 +55,8 @@ const employeeAuth = asyncHandler(async (req, res) => {
       console.log(token);
       // const data=res.send({ data: user, token: token });
       if (!token) {
-        res.status(400).send({ err: "token not generate" })
+        res.status(404)
+        throw Error('token not generate')
       } else {
         const data = res.json({
           _id: user._id,
@@ -67,7 +71,8 @@ const employeeAuth = asyncHandler(async (req, res) => {
       }
     } else {
       console.log("password not match");
-     return res.status(400).send({ err: "password not match" });
+      res.status(404)
+      throw Error('password not match')
     }
   } catch (e) {
     console.log(e);
@@ -75,7 +80,6 @@ const employeeAuth = asyncHandler(async (req, res) => {
   }
 
 })
-
 
 
 // attendace handler for employee section 
