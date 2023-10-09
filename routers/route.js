@@ -9,7 +9,14 @@ const Employeeatten = require("../database/models/employee/atten");
 // const Employeeverify = require('../verifyjs/empv');
 const verifyToken = require("../verifyjs/empv");
 const verifyadminToken = require("../verifyjs/empv");
-const bcrypt = require("bcryptjs");
+
+// route
+const { employeeRegister, employeeAuth,attendanceRegister } = require('../controllers/userController')
+const { adminRegister, adminAuth,adminLog } = require('../controllers/adminController')
+
+
+
+
 const cors = require("cors");
 router.use(cors());
 const bodyParser = require("body-parser"); // Middleware
@@ -23,7 +30,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 
 router.use(
   session({
-    secret: "secretkey",
+    secret: "secretkeyforusersa",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -47,169 +54,58 @@ var upload = multer({
   storage: storage,
 });
 
+
+
+// Alll Authenticate employee,admin register and login system here 
+// admin register control
+router.route('/admin/adminregister', upload.single("filename")).post(adminRegister)
+router.route('/admin/adminlogin').post(adminAuth)
+router.route('/login/admindefalut login').post(adminLog)
+// employee register control admin part
+router.route('/dashboard/employeeregister', upload.single("filename")).post(employeeRegister)
+// employee login part dynamic using section
+router.route('/login/emplogin').post(employeeAuth)
+// Alll Authenticate employee,admin register and login system end here 
+
+
+
+
+
+
+
+
+
 router.get("/", (req, res) => {
   console.log("demo page");
   res.send("<h1> hii</h1>");
 });
 
-
-
-// admin register section
-router.post("/admin/adminregister", upload.single("filename"), async (req, res) => {
-  console.log("demo page");
-  // res.send('api process integer')
-  const { adminname, fname, email, contact, address, password: plainTextPassword, } = req.body;
-  const password = await bcrypt.hash(plainTextPassword, salt);
-  try {
-    const check = await adminregister.findOne({ email: email });
-    if (check) { 
-      console.log("admin exist");
-      res.send("admin alredy registered");
-    } else {
-      const response = await adminregister.create({
-        adminname, fname, email, contact, address, password,
-        // filename:req.file.filename
-      });
-      res.send(response);
-      console.log(`${adminname}, Registration Successfull`);
-    }
-  } catch (e) {
-    console.log(e);
-    res.send(e);
-  }
-});
-// admin defined register login
-router.post("/login/admindefalut login", (req, res) => {
-  try {
-    const email = req.body.email;
-    const password = req.body.password;
-    if (email == "" && password == "") {
-      console.log("enter email and password");
-      return res.json({ error: "enter email and password" });
-    } else if (email == "admin312@gmail.com" && password == "boolean212") {
-      req.session.email = email;
-      console.log(req.session.email);
-      token = jwt.sign(
-        {
-          email: email,
-          type: "admin",
-        },
-        "Booleanai$23@as$%",
-        {
-          expiresIn: "324 seconds",
-        }
-      );
-      console.log("Login admin");
-      if (!token) {
-        return res.json({ token: "token not generate" });
-      } else {
-        res.status(200).json({ token: token });
-        req.session.email = email;
-      }
-    } else {
-      console.log({ err: "Your password  and email has been worng." });
-      return res
-        .status(401)
-        .send({ error: "Your password  and email has been worng." });
-    }
-  } catch (error) {
-    res.status(400).json({
-      message: "An error occurred",
-      error: error.message,
+router.get("/admin/dashboard", (req, res) => {
+  const token = req.body.token;
+  if (token) {
+    const decode = jwt.verify(token, 'erueoilfu34w894wedskndskf');
+    res.json({
+      login: true,
+      data: decode,
+    });
+  } else {
+    res.json({
+      login: false,
+      data: "error",
     });
   }
-});
-// admin login
-router.post("/login/adminlogin", async (req, res) => {
-  const { email, password, empID } = req.body;
-  try {
-    const user = await adminregister.findOne({ email: email });
-    if (!user) {
-      return ({ status: "error", error: "user not found" },
-      console.log("error")
-      );
-    }
-    if (await bcrypt.compare(await password, user.password)) {
-      // creating a JWT token
-      (tdata = { id: user._id, email: user.email, type: "admin" }), { expiresIn: "10 minutes" };
-      const token = jwt.sign(tdata, "kdsjae3238932");
-      if (!token) {
-        return res.json({ token: "token not generate" });
-      } else {
-        res.status(200).json({ data: user, token: token });
-        // req.session.email = email;
-        console.log(token);
 
-      }
-    } else {
-      console.log("password not match");
-      res.send({ err: "password not match" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.send(e);
-  }
 });
 
-// employee register control admin part
 
-router.post("/dashboard/employeeregister", upload.single("filename"), async (req, res) => {
-  console.log("demo page");
-  // res.send('api process integer')
-  const { empID, name, fname, email, contact, address, salary, password: plainTextPassword, } = req.body;
-  const password = await bcrypt.hash(plainTextPassword, salt);
-  try {
-    const check = await Employee.findOne({ email: email });
-    const check2 = await Employee.findOne({ empID: empID });
-    if (check) {
-      console.log("user exist");
-      res.send("user alredy registered");
-    } else if (check2) {
-      console.log("user exist");
-      res.send("user alredy registered");
-    } else {
-      const response = await Employee.create({
-        empID, name, fname, email, contact, address, salary, password,
-        // filename:req.file.filename
-      });
-      res.send(response);
-      console.log(`${name}, Registration Successfull`);
-    }
-  } catch (e) {
-    console.log(e);
-    res.send(e);
-  }
-});
 
-// employee login part dynamic using section
-router.post("/login/emplogin", async (req, res) => {
-  const { email, password, empID } = req.body;
-  try {
-    const user = await Employee.findOne({ email: email });
-    const user1 = await Employee.findOne({ empID: empID });
 
-    if (!user) {
-      return { status: "error", error: "user not found" };
-    }
-    if (await bcrypt.compare(await password, user.password)) {
-      // creating a JWT token
-      (tdata = {
-        id: user._id,
-        email: user.email,
-        type: "user",
-      }),
-        { expiresIn: "10 minutes" };
-      const token = jwt.sign(tdata, JWT_SECRET);
-      console.log(token);
-      res.send({ data: user, token: token });
-    } else {
-      console.log("password not match");
-      res.send({ err: "password not match" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.send(e);
-  }
+
+
+
+
+router.get("/login/empdashboard", (req, res) => {
+  res.status(200).json({ data: user });
 });
 // const response = await Employeeverify(email, password)
 // console.log(response)
@@ -237,14 +133,14 @@ router.post("/login/emplogin", async (req, res) => {
 //     res.send('no Employee found')
 // }
 
-router.get("/employee/empdashboard", (req, res) => {
-  if (verifyToken(token)) {
-    console.log(verifyToken);
-    console.log("token generate true");
-  } else {
-    console.log("token generate false");
-  }
-});
+// router.get("/employee/empdashboard", (req, res) => {
+//   if (verifyToken(token)) {
+//     console.log(verifyToken);
+//     console.log("token generate true");
+//   } else {
+//     console.log("token generate false");
+//   }
+// });
 
 // router.get('/admindashboard', (req, res) => {
 //     const token = req.body;
@@ -308,7 +204,7 @@ router.delete("/empdashboard/allemp/:id", async (req, res) => {
     res.status(404).send(e);
   }
 });
-// a spacific data for employee update a record for a single employee
+// a spacific data for employee update a record for a single employee 
 router.put("/empdashboard/allemp/:id", async (req, res) => {
   let upl = req.params.id;
   let { name, fname } = req.body;
@@ -383,22 +279,18 @@ router.put("/employee/passwordc/:email", async (req, res) => {
 });
 
 // attendance details
+router.route("/employee/atten").post(attendanceRegister);
 
-router.post("/employee/atten", async (req, res) => {
-  const { empID, atten, date, punchin } = req.body;
-  try {
-    const attendence = await Employeeatten.create({
-      empID,
-      atten,
-      punchin,
-      date,
-    });
-    res.send(attendence);
-  } catch (e) {
-    console.log(e);
-    res.send({ err: e });
-  }
-});
+
+
+
+
+
+
+
+
+
+
 
 router.post("/employee/atten/:date", async (req, res) => {
   const date = req.params.date;
@@ -428,7 +320,7 @@ router.get("/employee/attenD", async (req, res) => {
     const filteredUsers = response.filter((user) => {
       let isValid = true;
       for (key in filters) {
-        console.log(key, user[key], filters[key]);
+        // console.log(key, user[key], filters[key]);
         isValid = isValid && user[key] == filters[key];
       }
       return isValid;
@@ -510,6 +402,7 @@ router.get("/employee/attenp", async (req, res) => {
 // filter
 
 router.get("/employee/attenag", async (req, res) => {
+  const filters = req.query
   try {
     const response = await Employeeatten.aggregate([
       {
@@ -521,6 +414,15 @@ router.get("/employee/attenag", async (req, res) => {
         },
       },
     ]);
+    const filteredUsers = response.filter((user) => {
+      let isValid = true;
+      for (key in filters) {
+        console.log(key, user[key], filters[key]);
+        isValid = isValid && user[key] == filters[key];
+      }
+      return isValid;
+    });
+    res.send(filteredUsers);
     res.send(response);
   } catch (e) {
     console.log(e);

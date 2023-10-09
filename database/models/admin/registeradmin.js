@@ -1,8 +1,9 @@
+const { Timestamp } = require('mongodb')
 const mongoose=require('mongoose')
 const validator=require('validator')
 
 const adminregisterSchema=mongoose.Schema({
-    adminname:{
+    admin_name:{
         type:String,
         required:true,
         lowercase:true,
@@ -45,7 +46,7 @@ const adminregisterSchema=mongoose.Schema({
         type:Date,
         default:Date.now
     }
-})
+},{timestamp:true})
  const adminregister=mongoose.model('adminregister',adminregisterSchema)
  
  module.exports=adminregister;
