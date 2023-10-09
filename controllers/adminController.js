@@ -102,7 +102,7 @@ const adminAuth=asyncHandler(async(req,res)=>{
         throw new Error(`someting wrong user and password not found`)
       }
     }catch(err){
-      res.status(404).status(err)
+      res.status(404).send(err)
     }
 
 })
