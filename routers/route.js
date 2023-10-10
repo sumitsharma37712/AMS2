@@ -423,7 +423,7 @@ router.get("/employee/attenag", async (req, res) => {
       return isValid;
     });
     res.send(filteredUsers);
-    res.send(response);
+    // res.send(response);
   } catch (e) {
     console.log(e);
     res.send({ err: e });
