@@ -404,10 +404,10 @@ router.get("/employee/attenp", async (req, res) => {
 router.get("/employee/attenag", async (req, res) => {
   const filters = req.query
   try {
-    const response = await Employeeatten.aggregate([
+    const response = await Employee.aggregate([
       {
         $lookup: {
-          from: "registers",
+          from: "empattens",
           localField: "empID",
           foreignField: "empID",
           as: "result",
