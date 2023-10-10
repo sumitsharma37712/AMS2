@@ -49,6 +49,11 @@ const attendenceSchema=mongoose.Schema({
         require:true,
         trim:true,
     },
+    department:{
+        type:String,
+        lowercase:true,
+        trim:true
+    },
     filename:{
         type:String,
     },
