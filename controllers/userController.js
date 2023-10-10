@@ -22,7 +22,7 @@ const employeeRegister = asyncHandler(async (req, res) => {
       res.send("user alredy registered");
     } else {
       const response = await Employee.create({
-        empID, name, fname, email, contact, address, salary,department, password,
+        empID, name, fname, email, contact,department, salary, address, password,
         // filename:req.file.filename
       });
       res.send(response);
