@@ -9,7 +9,7 @@ JWT_SECRET = process.env.JWT;
 // employee register and login  
 
 const employeeRegister = asyncHandler(async (req, res) => {
-  const { empID, name, fname, email, contact, address, salary, password: plainTextPassword, } = req.body;
+  const { empID,department, name, fname, email, contact, address, salary, password: plainTextPassword, } = req.body;
   const password = await bcrypt.hash(plainTextPassword, salt);
   try {
     const check = await Employee.findOne({ email: email });
@@ -22,7 +22,7 @@ const employeeRegister = asyncHandler(async (req, res) => {
       res.send("user alredy registered");
     } else {
       const response = await Employee.create({
-        empID, name, fname, email, contact, address, salary, password,
+        empID, name, fname, email, contact, address, salary,department, password,
         // filename:req.file.filename
       });
       res.send(response);
